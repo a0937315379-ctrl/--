@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1d4ed8">
+<title>2027 國中教甄複習題庫</title>
+<style>
+:root {
+  --bg:#f6f7fb; --card:#fff; --text:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+  --blue:#2563eb; --blue2:#1d4ed8; --green:#15803d; --red:#b91c1c; --orange:#b45309;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;background:var(--bg);color:var(--text)}
+.wrap{max-width:1080px;margin:auto;padding:16px}
+.hero{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;padding:24px;border-radius:22px;box-shadow:0 12px 30px rgba(37,99,235,.18)}
+.hero h1{margin:0 0 8px;font-size:28px}
+.hero p{margin:0;line-height:1.7;opacity:.95}
+.subject-switch{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.subject-btn{padding:18px;border-radius:18px;border:2px solid var(--line);background:#fff;font-size:18px;font-weight:850;cursor:pointer}
+.subject-btn.active{border-color:var(--blue);background:#eff6ff;color:var(--blue2)}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 6px 18px rgba(15,23,42,.05)}
+.controls{position:sticky;top:0;z-index:10;margin-top:14px;background:rgba(246,247,251,.95);padding:10px 0}
+.filters{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:10px}
+select,button,input{font:inherit}
+select,input{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.actions button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 13px;font-weight:750;cursor:pointer}
+.actions .primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.actions .danger{color:var(--red)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:10px}
+.stat{text-align:center;padding:8px;border-radius:12px;background:#f8fafc}
+.stat .n{font-size:22px;font-weight:850}
+.stat .l{font-size:12px;color:var(--muted)}
+.section-title{font-size:20px;font-weight:850;margin:20px 0 8px}
+.category-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-size:13px;font-weight:700;cursor:pointer}
+.chip.active{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd}
+.qcard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 5px 16px rgba(0,0,0,.04)}
+.qcard h2{font-size:19px;line-height:1.6;margin:12px 0}
+.meta{display:flex;gap:6px;flex-wrap:wrap}
+.meta span{background:#eff6ff;color:#1d4ed8;padding:5px 8px;border-radius:999px;font-size:12px;font-weight:700}
+.options{display:grid;gap:9px}
+.option{width:100%;display:flex;gap:10px;align-items:flex-start;text-align:left;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer}
+.option:hover{border-color:#93c5fd;background:#f8fbff}
+.option.correct{border-color:#86efac;background:#f0fdf4}
+.option.wrong{border-color:#fca5a5;background:#fef2f2}
+.key{width:25px;height:25px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#eef2ff;font-weight:800;flex:0 0 auto}
+.feedback{display:none;margin-top:12px;padding:12px;border-radius:12px;line-height:1.7}
+.feedback.show-ok{display:block;background:#f0fdf4;color:#166534}
+.feedback.show-bad{display:block;background:#fef2f2;color:#991b1b}
+.empty{padding:24px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:16px}
+.hidden{display:none!important}
+.footer{color:var(--muted);font-size:13px;line-height:1.7;margin:22px 0 8px}
+@media(max-width:760px){
+ .filters{grid-template-columns:1fr}
+ .stats{grid-template-columns:repeat(2,1fr)}
+ .subject-switch{grid-template-columns:1fr 1fr}
+ .hero h1{font-size:23px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <h1>🎵 2027 國中教甄複習題庫</h1>
+    <p>音樂專業科目與教育專業科目完全分開。可依考區、分類、難度刷題，並保留錯題、收藏與作答統計。</p>
+  </section>
+
+  <div class="subject-switch">
+    <button id="musicBtn" class="subject-btn active" onclick="setSubject('音樂專業')">🎼 音樂專業科目</button>
+    <button id="eduBtn" class="subject-btn" onclick="setSubject('教育專業')">📘 教育專業科目</button>
+  </div>
+
+  <div class="controls">
+    <div class="panel">
+      <div class="filters">
+        <select id="district" onchange="applyFilters()">
+          <option value="">全部考區</option>
+          <option>中區風格</option>
+          <option>新北風格</option>
+          <option>桃園風格</option>
+          <option>綜合</option>
+        </select>
+        <select id="category" onchange="applyFilters()"></select>
+        <select id="difficulty" onchange="applyFilters()">
+          <option value="">全部難度</option>
+          <option>基礎</option>
+          <option>中等</option>
+          <option>進階</option>
+        </select>
+      </div>
+
+      <div class="category-chips" id="chips"></div>
+
+      <div class="actions">
+        <button class="primary" onclick="random20()">📅 隨機20題</button>
+        <button onclick="mock50()">⏱️ 50題模擬</button>
+        <button onclick="showWrong()">🔥 錯題再練</button>
+        <button onclick="showFav()">⭐ 收藏題</button>
+        <button onclick="showAll()">全部題目</button>
+        <button class="danger" onclick="resetStats()">清除紀錄</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="n" id="visibleCount">0</div><div class="l">目前題數</div></div>
+        <div class="stat"><div class="n" id="answeredCount">0</div><div class="l">已作答</div></div>
+        <div class="stat"><div class="n" id="correctCount">0</div><div class="l">答對</div></div>
+        <div class="stat"><div class="n" id="accuracy">0%</div><div class="l">正確率</div></div>
+        <div class="stat"><div class="n" id="wrongCount">0</div><div class="l">錯題</div></div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-title" id="subjectTitle">🎼 音樂專業科目</h2>
+  <main id="bank"></main>
+  <div id="empty" class="empty hidden">目前沒有符合條件的題目。</div>
+
+  <div class="footer">
+    題目為依國中音樂教甄準備方向設計的原創複習題，不是逐字重製歷屆試題。作答紀錄僅儲存在使用者自己的瀏覽器 localStorage。
+  </div>
+</div>
+
+<script>
+const BANK=[{"id": 1, "subject": "音樂專業", "category": "西洋音樂史", "difficulty": "基礎", "q": "下列哪一首最能代表 J. S. Bach？", "options": ["《皮爾金組曲》", "《德意志安魂曲》", "《布蘭登堡協奏曲》", "《春之祭》"], "answer": 2, "exp": "J. S. Bach 屬於巴洛克，代表作品可記 《布蘭登堡協奏曲》；常見考點：協奏曲、對位、賦格、宗教音樂。", "districts": ["中區風格", "新北風格", "桃園風格"]}, {"id": 2, "subject": "音樂專業", "category": "西洋音樂史", "difficulty": "基礎", "q": "J. S. Bach 最適合歸入下列哪個音樂史時期？", "options": ["20世紀", "古典", "巴洛克", "民族樂派"], "answer": 2, "exp": "J. S. Bach 的時期定位：巴洛克。", "districts": ["中區風格", "綜合"]}, {"id": 3, "subject": "音樂專業", "category": "西洋音樂史", "difficulty": "基礎", "q": "下列哪一首最能代表 Handel？", "options": ["《德意志安魂曲》", "《彌賽亞》", "《第六號交響曲「田園」》", "《春之祭》"], "answer": 1, "exp": "Handel 屬於巴洛克，代表作品可記 《彌賽亞》；常見考點：神劇、神劇、英國音樂生活。", "districts": ["中區風格", "新北風格", "桃園風格"]}, {"id": 4, "subject": "音樂專業", "category": "西洋音樂史", "difficulty": "基礎", "q": "Handel 最適合歸入下列哪個音樂史時期？", "options": ["中世紀", "民族樂派", "古典", "巴洛克"], "answer": 3, "exp": "Handel 的時期定位：巴洛克。", "districts": ["中區風格", "綜合"]}, {"id": 5, "subject": "音樂專業", "category": "西洋音樂史", "difficulty": "基礎", "q": "下列哪一首最能代表 Vivaldi？", "options": ["《第六號交響曲「田園」》", "《布蘭登堡協奏曲》", "《Clapping Music》", "《四季》"], "answer": 3, "exp": "Vivaldi 屬於巴洛克，代表作品可記 《四季》；常見考點：小提琴協奏曲、ritornello、標題協奏曲。", "districts": ["中區風格", "新北風格", "桃園風格"]}, {"id": 6, "subject": "音樂專業", "category": "西洋音樂史", "difficulty": "基礎", "q": "Vivaldi 最適合歸入下列哪個音樂史時期？", "options": ["中世紀", "20世紀", "巴洛克", "浪漫"], "answer": 2, "exp": "Vivaldi 的時期定位：巴洛克。", "districts": ["中區風格", "綜合"]}];
+const LETTERS=["A","B","C","D"];
+const MUSIC_CATS=["世界／爵士／流行／電影", "中國／臺灣／傳統音樂", "作曲家／作品配對", "樂器／音樂科技", "樂理／和聲／曲式", "西洋音樂史", "音樂教育／課綱"];
+const EDU_CATS=["教育哲學／社會學", "教育心理", "教育評量", "課程與教學"];
+
+let currentSubject="音樂專業";
+let currentCategory="";
+let displayed=[];
+let stats=JSON.parse(localStorage.getItem("teacher_exam_stats_v3")||'{"answered":0,"correct":0}');
+let wrongIds=JSON.parse(localStorage.getItem("teacher_exam_wrong_v3")||"[]");
+let favIds=JSON.parse(localStorage.getItem("teacher_exam_fav_v3")||"[]");
+
+function esc(s){
+ return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
+}
+
+function setSubject(subject){
+ currentSubject=subject;
+ currentCategory="";
+ document.getElementById("musicBtn").classList.toggle("active",subject==="音樂專業");
+ document.getElementById("eduBtn").classList.toggle("active",subject==="教育專業");
+ document.getElementById("subjectTitle").textContent=subject==="音樂專業"?"🎼 音樂專業科目":"📘 教育專業科目";
+ rebuildCategories();
+ applyFilters();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function rebuildCategories(){
+ const cats=currentSubject==="音樂專業"?MUSIC_CATS:EDU_CATS;
+ const select=document.getElementById("category");
+ select.innerHTML='<option value="">全部分類</option>'+cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
+ const chips=document.getElementById("chips");
+ chips.innerHTML='<button class="chip active" data-cat="" onclick="pickCategory(\'\')">全部</button>'+
+   cats.map(c=>`<button class="chip" data-cat="${esc(c)}" onclick="pickCategory('${c.replace(/'/g,"\\'")}')">${esc(c)}</button>`).join("");
+}
+
+function pickCategory(cat){
+ currentCategory=cat;
+ document.getElementById("category").value=cat;
+ document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("active",x.dataset.cat===cat));
+ applyFilters();
+}
+
+document.getElementById("category").addEventListener("change",function(){
+ currentCategory=this.value;
+ document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("active",x.dataset.cat===currentCategory));
+});
+
+function baseFiltered(){
+ const district=document.getElementById("district").value;
+ const diff=document.getElementById("difficulty").value;
+ const cat=document.getElementById("category").value;
+ return BANK.filter(q=>
+   q.subject===currentSubject &&
+   (!district || (q.districts||[]).includes(district)) &&
+   (!diff || q.difficulty===diff) &&
+   (!cat || q.category===cat)
+ );
+}
+
+function applyFilters(){
+ displayed=baseFiltered();
+ render(displayed);
+}
+
+function shuffle(arr){
+ const a=arr.slice();
+ for(let i=a.length-1;i>0;i--){
+   const j=Math.floor(Math.random()*(i+1));
+   [a[i],a[j]]=[a[j],a[i]];
+ }
+ return a;
+}
+
+function random20(){
+ displayed=shuffle(baseFiltered()).slice(0,20);
+ render(displayed);
+}
+
+function mock50(){
+ displayed=shuffle(baseFiltered()).slice(0,50);
+ render(displayed);
+}
+
+function showWrong(){
+ displayed=baseFiltered().filter(q=>wrongIds.includes(q.id));
+ render(displayed);
+}
+
+function showFav(){
+ displayed=baseFiltered().filter(q=>favIds.includes(q.id));
+ render(displayed);
+}
+
+function showAll(){
+ document.getElementById("district").value="";
+ document.getElementById("difficulty").value="";
+ currentCategory="";
+ rebuildCategories();
+ displayed=BANK.filter(q=>q.subject===currentSubject);
+ render(displayed);
+}
+
+function render(list){
+ const bank=document.getElementById("bank");
+ const empty=document.getElementById("empty");
+ if(!list.length){
+   bank.innerHTML="";
+   empty.classList.remove("hidden");
+   updateStats();
+   return;
+ }
+ empty.classList.add("hidden");
+ bank.innerHTML=list.map((q,idx)=>{
+   const opts=q.options.map((o,i)=>`
+     <button class="option" id="opt-${q.id}-${i}" onclick="choose(${q.id},${i})">
+       <span class="key">${LETTERS[i]}</span><span>${esc(o)}</span>
+     </button>`).join("");
+   const district=(q.districts||["綜合"]).join("／");
+   const fav=favIds.includes(q.id)?"★ 已收藏":"☆ 收藏";
+   return `
+   <article class="qcard" id="q-${q.id}">
+     <div class="meta">
+       <span>${esc(q.category)}</span><span>${esc(q.difficulty)}</span><span>${esc(district)}</span>
+     </div>
+     <h2>${idx+1}. ${esc(q.q)}</h2>
+     <div class="options">${opts}</div>
+     <div class="actions">
+       <button onclick="toggleFav(${q.id})" id="fav-${q.id}">${fav}</button>
+     </div>
+     <div class="feedback" id="fb-${q.id}"></div>
+   </article>`;
+ }).join("");
+ updateStats();
+}
+
+function choose(id,choice){
+ const q=BANK.find(x=>x.id===id);
+ if(!q)return;
+ q.options.forEach((_,i)=>{
+   const el=document.getElementById(`opt-${id}-${i}`);
+   if(el)el.classList.remove("correct","wrong");
+ });
+ const correctEl=document.getElementById(`opt-${id}-${q.answer}`);
+ if(correctEl)correctEl.classList.add("correct");
+ const fb=document.getElementById("fb-"+id);
+
+ stats.answered++;
+ if(choice===q.answer){
+   stats.correct++;
+   fb.className="feedback show-ok";
+   fb.innerHTML=`✅ 答對！<br>${esc(q.exp)}`;
+   wrongIds=wrongIds.filter(x=>x!==id);
+ } else {
+   const wrongEl=document.getElementById(`opt-${id}-${choice}`);
+   if(wrongEl)wrongEl.classList.add("wrong");
+   fb.className="feedback show-bad";
+   fb.innerHTML=`❌ 正確答案：${LETTERS[q.answer]}．${esc(q.options[q.answer])}<br>${esc(q.exp)}`;
+   if(!wrongIds.includes(id))wrongIds.push(id);
+ }
+ save();
+}
+
+function toggleFav(id){
+ if(favIds.includes(id))favIds=favIds.filter(x=>x!==id);
+ else favIds.push(id);
+ const b=document.getElementById("fav-"+id);
+ if(b)b.textContent=favIds.includes(id)?"��� 已收藏":"☆ 收藏";
+ save();
+}
+
+function save(){
+ localStorage.setItem("teacher_exam_stats_v3",JSON.stringify(stats));
+ localStorage.setItem("teacher_exam_wrong_v3",JSON.stringify(wrongIds));
+ localStorage.setItem("teacher_exam_fav_v3",JSON.stringify(favIds));
+ updateStats();
+}
+
+function updateStats(){
+ document.getElementById("visibleCount").textContent=displayed.length;
+ document.getElementById("answeredCount").textContent=stats.answered;
+ document.getElementById("correctCount").textContent=stats.correct;
+ document.getElementById("accuracy").textContent=stats.answered?Math.round(stats.correct/stats.answered*100)+"%":"0%";
+ document.getElementById("wrongCount").textContent=wrongIds.length;
+}
+
+function resetStats(){
+ if(confirm("確定要清除作答、錯題與收藏紀錄嗎？")){
+   stats={answered:0,correct:0}; wrongIds=[]; favIds=[];
+   save(); render(displayed);
+ }
+}
+
+rebuildCategories();
+applyFilters();
+</script>
+</body>
+</html>
